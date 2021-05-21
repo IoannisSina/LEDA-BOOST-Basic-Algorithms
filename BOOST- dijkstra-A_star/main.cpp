@@ -70,7 +70,7 @@ void random_graph_timings();
 int main() {
 	
 		
-	//timings for edge wight from 1 to 100. It can be changed in the EdgeInfo struct
+	//timings for edge wight from 1 to 100. It can be modified in the EdgeInfo struct
 	
 	grid_graph_timings();
 	std::cout<<"\n\n\n";
@@ -238,11 +238,11 @@ void ht_for_random_graph(Graph& g, vertex_d ending_node){
 	
 	
 	dijkstra_SP(copy_g_L1_to_all, L1, ending_node, false, false);		//Dijkstra from L1 to all nodes
-	//assert(dijkstra_ckecker(copy_g_L1_to_all) == true);					//assure that algorithm runs correctly
+	//assert(dijkstra_ckecker(copy_g_L1_to_all) == true);				//assure that algorithm runs correctly
 	//print_graph_info(copy_g_L1_to_all, L1, ending_node);
 	
 	dijkstra_SP(copy_g_all_to_L1, L1, ending_node, false, false);		//Dijkstra from all nodes to L1. After execution d(i) will be shortest distance from i to L1
-	//assert(dijkstra_ckecker(copy_g_all_to_L1) == true);					//assure that algorithm runs correctly
+	//assert(dijkstra_ckecker(copy_g_all_to_L1) == true);				//assure that algorithm runs correctly
 	//print_graph_info(copy_g_all_to_L1, L1, ending_node);
 	//------------------------------------------------------------------------------
 	
@@ -265,11 +265,11 @@ void ht_for_random_graph(Graph& g, vertex_d ending_node){
 	//--------------------------------------L2--------------------------------------
 	
 	dijkstra_SP(copy_g_L2_to_all, L2, ending_node, false, false);		//Dijkstra from L1 to all nodes
-	//assert(dijkstra_ckecker(copy_g_L2_to_all) == true);					//assure that algorithm runs correctly
+	//assert(dijkstra_ckecker(copy_g_L2_to_all) == true);				//assure that algorithm runs correctly
 	//print_graph_info(copy_g_L2_to_all, L2, ending_node);
 	
 	dijkstra_SP(copy_g_all_to_L2, L2, ending_node, false, false);		//Dijkstra from all nodes to L1. After execution d(i) will be shortest distance from i to L1
-	//assert(dijkstra_ckecker(copy_g_all_to_L2) == true);					//assure that algorithm runs correctly
+	//assert(dijkstra_ckecker(copy_g_all_to_L2) == true);				//assure that algorithm runs correctly
 	//print_graph_info(copy_g_all_to_L2, L2, ending_node);
 	//------------------------------------------------------------------------------
 	
@@ -361,11 +361,11 @@ void grid_graph(Graph& g, int r, int c){
 		curr_row[0] = current_node;
 		
 		
-		for(int j=1; j < r; j++){					//first column
+		for(int j=1; j < r; j++){						//first column
 			
 			vertex_d new_node = add_vertex(g);
 			//-------------------------------------------------------
-			normal_edge = add_edge(curr_row[j], new_node, g).first;		//add edge from column i to i+1
+			normal_edge = add_edge(curr_row[j], new_node, g).first;				//add edge from column i to i+1
 			reverse_edge = add_edge(new_node, curr_row[j], g).first;
 			
 			g[reverse_edge].weight = g[normal_edge].weight; 					//normal and reverse edges must have same weight
