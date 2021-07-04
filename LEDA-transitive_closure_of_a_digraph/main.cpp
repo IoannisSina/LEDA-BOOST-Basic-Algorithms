@@ -10,7 +10,7 @@
 #include <string>
 using namespace leda;
 
-// structs
+// structs and typedefs
 
 typedef struct my_struct {
 	
@@ -27,11 +27,13 @@ typedef struct my_struct {
 
 
 
-// declaration of needed functions
+// declaration of algorithm functions
 void MakeEdge(graph& G, node v, node w, node_array<list<node>>& Adjacent, node_matrix<my_struct>& Index);
 void RemoveEdge(graph& G, node v, node w, node_array<list<node>>& Adjacent, node_matrix<my_struct>& Index);
 void MakeClosure(graph& G, node v, node w, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 void RemoveClosure(graph& G, node v, node w, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
+
+void InsertEdge(graph& G, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 
 
 // declaration of helper functions
@@ -85,7 +87,7 @@ int main() {
 	
 	
 }
-// needed functions
+// algorithm functions
 void MakeEdge(graph& G, node v, node w, node_array<list<node>>& Adjacent, node_matrix<my_struct>& Index) {
 	
 	assert(check_if_edge_exists(G, v, w) == false); // assure that edge does not already exist
@@ -123,6 +125,38 @@ void RemoveClosure(graph& G, node v, node w, node_array<list<node>>& Reaches, no
 	
 	Reaches[w].remove(v);				// remove v from Reaches(w)
 	Index[v][w].closureSource = NULL;	// set closure Source of index[v,w] to NULL
+}
+
+
+void InsertEdge(graph& G, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
+	
+	assert(check_if_edge_exists(G, a, b) == false); // assure that edge does not already exist
+	
+	
+	list<std::pair <node, node>> worklist;				// worklist will contain the new transitive closure edges. List of pair nodes
+	node x,y,z;
+	
+	MakeEdge(G, a, b, Adjacent, Index);	// in any case, <a,b> is a new graph edge 
+	
+	if(Index[a][b].refcount == 0) { 	// then <a,b> is a new transitive closure edge 
+		
+		MakeClosure(G, a, b, Reaches, Index);
+		worklist.push(find_edge(G, a, b));
+	}
+	
+	Index[a][b].refcount += 1;	// so increment its refcount by 1
+	
+	forall(x, Reaches(a)) {		// examine each existing tc edge <x,a> 
+	
+		if(Index[x][b].refcount == 0) {
+			
+			MakeClosure(G, x, b, Reaches, Index);
+			
+		}
+		
+	}
+	
+	
 }
 // helper functions
 bool check_if_edge_exists(graph& G, node v, node w) {
