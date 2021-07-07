@@ -50,12 +50,15 @@ void RemoveEdge(graph& G, node v, node w, node_array<list<node>>& Adjacent, node
 void MakeClosure(graph& G, node v, node w, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 void RemoveClosure(graph& G, node v, node w, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 
-void InsertEdge(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
+
+void InsertEdge(graph& G, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 void DeleteEdge(graph& G, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 
 //find path operations
 void new_tc_edge_insertion(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node x, node z, node_matrix<my_struct>& Index);
 void refcount_incremented_insertion(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node x, node y, node z, node_matrix<my_struct>& Index);
+std::pair<node,node> custom_path_for_findpath(int length, graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
+void InsertEdge(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 void findpath(graph& G, node x, node z, list<support_struct>& support_list, node_matrix<my_struct>& Index);
 
 
@@ -69,128 +72,47 @@ void tc_edges(graph& G, node_array<list<node>>& Reaches);		// prints the transit
 void print_edges(graph& G);										// prints edges of G
 node find_predecessor(node x, node z, list<support_struct>& support_list); // return a predecessor of <x,y>
 node find_node_by_info(GRAPH<int, edge>& supportG, int info);	// returns a node from support G by info
-std::pair<node,node> custom_path(int length, graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
+std::pair<node,node> custom_path(int length, graph& G, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 
+// test functions
+void test_insert_delete(graph& G, int num_of_edges_inserted, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
+void test_findpath(int length, graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index);
 	
 
 int main() {
 	
-	timer insert_time;
-	int num_of_nodes = 1000;
+	
+	int num_of_nodes = 2500; // for all graphs
+	
+	//------------------------------test Insert and Delete time------------------------------
+	
 	graph G;								// create digraph G
-	
-	list<support_struct> support_list;		// contains structs for each node
-	GRAPH<int, edge> supportG;				// create support Graph	
-	
 	add_nodes_to_graph(G, num_of_nodes);	// add nodes to G
-	
-	//------Test nodes------
-	node a = G.new_node();
-	node b = G.new_node();
-	//----------------------
-
-	 
-	 
 	//-----initialize needed variables-------
 	node_array<list<node>> Adjacent(G);
 	node_array<list<node>> Reaches(G);
 	node_matrix<my_struct> Index(G);
 	//---------------------------------------
-	
-	std::cout<<"\n-----------------INSERTING EDGES-----------------\n";
-	//-----------------------------------------------INSERTING EDGES-----------------------------------------------
-	insert_time.start();
 	int num_of_edges_inserted = 100;
-	std::pair<node,node> my_pair = custom_path(50, G, supportG, support_list, a, b, Adjacent, Reaches, Index);
-	// while(num_of_edges_inserted > 0) {
-		
-		
-		// node src = G.choose_node();
-		// node trg = G.choose_node();
-		
-		// while(!edge_can_be_inserted(G, src, trg)) {
-			// src = G.choose_node();
-			// trg = G.choose_node();
-		// }
-		
-		// InsertEdge(G, supportG, support_list, src, trg, Adjacent, Reaches, Index);
-		// num_of_edges_inserted--;
-		
-		// std::cout<<"\n\nEdges of G:\n\n";
-		// print_edges(G);
-		// std::cout<<"\n\nEdges of G transitive closure:\n\n";
-		// tc_edges(G, Reaches);
-		
-		
-	// }
-	insert_time.stop();
-	std::cout<<"Number of edges after insertions: "<<G.number_of_edges()<<"\n";
-	// std::cout<<"Length of source node Adjacent after MakeEdge: "<<Adjacent[a].length()<<"\n";
-	// std::cout<<"Length of target node Reaches after MakeClosure: "<<Reaches[b].length()<<"\n\n\n";
-	std::cout<<"Algorithm time: "<<insert_time.elapsed_time()<<"\n";
-	//--------------------------------------------------TESTS------------------------------------------------------
+	test_insert_delete(G, num_of_edges_inserted, Adjacent, Reaches, Index);
+	
+	//---------------------------------------------------------------------------------------
 	
 	
-	node_array<int> ord(G);
-	assert(TOPSORT(G, ord) == true); // assure graph is acyclic
-	std::cout<<"Length of support list: "<<support_list.length()<<"\n";
+	//-------------------------------------test findpath-------------------------------------
+	// graph G1;
+	// add_nodes_to_graph(G1, num_of_nodes);
 	
+	// node_array<list<node>> Adjacent1(G1);
+	// node_array<list<node>> Reaches1(G1);
+	// node_matrix<my_struct> Index1(G1);
 	
+	// int path_length = 100;
+	// list<support_struct> support_list1;		// contains structs for each node
+	// GRAPH<int, edge> supportG1;				// create support Graph
+	// test_findpath(path_length, G1, supportG1, support_list1, Adjacent1, Reaches1, Index1);
+	//---------------------------------------------------------------------------------------
 	
-	//-------------------------test findpath-------------------------
-	
-	//std::pair<node,node> my_pair = custom_path(11, G, supportG, support_list, a, b, Adjacent, Reaches, Index);
-	// InsertEdge(G, supportG, support_list, first, prev, Adjacent, Reaches, Index);	// Base of recursion for find path
-	//std::cout<<"\n\nPath returned from findpath:\n\n";
-	//findpath(G, my_pair.first, my_pair.second, support_list, Index);
-	//std::cout<<"\n\n";
-	//---------------------------------------------------------------
-	
-	
-	
-	//-------------------------------------------------------------------------------------------------------------
-	std::cout<<"\n-----------------DELETING EDGES-----------------\n";
-	//-----------------------------------------------DELETING EDGES------------------------------------------------
-	
-	// delete all edges previously inserted
-	list<edge> edges_to_delete = G.all_edges();
-	edges_to_delete.permute(); // randomness
-	while(!edges_to_delete.empty()) {
-		edge to_delete = edges_to_delete.pop();
-		DeleteEdge(G, source(to_delete), target(to_delete), Adjacent, Reaches, Index);
-		
-		// std::cout<<"\n\nEdges of G:\n\n";
-		// print_edges(G);
-		// std::cout<<"\n\nEdges of G transitive closure:\n\n";
-		// tc_edges(G, Reaches);
-	}
-	//std::cout<<"Number of edges after deletions: "<<G.number_of_edges()<<"\n";
-	
-	//-------------------------------------------------------------------------------------------------------------
-	
-	
-	
-	
-	//-----------------------------------Test MakeEdge and RemoveEdge-----------------------------------
-	// MakeEdge(G, a, b, Adjacent, Index);
-	// std::cout<<"Number of edges after MakeEdge: "<<G.number_of_edges()<<"\n";
-	// std::cout<<"Length of source node Adjacent after MakeEdge: "<<Adjacent[a].length()<<"\n\n\n";
-	
-	// RemoveEdge(G, a, b, Adjacent, Index);
-	// std::cout<<"Number of edges after RemoveEdge: "<<G.number_of_edges()<<"\n";
-	// std::cout<<"Length of source node Adjacent after RemoveEdge: "<<Adjacent[a].length()<<"\n\n\n";
-	//--------------------------------------------------------------------------------------------------
-	
-	//--------------------------------Test MakeClosure and RemoveClosure---------------------------------
-	// MakeClosure(G, a, b, Reaches, Index);
-	// std::cout<<"Length of target node Reaches after MakeClosure: "<<Reaches[b].length()<<"\n\n\n";
-	
-	// RemoveClosure(G, a, b, Reaches, Index);
-	// std::cout<<"Length of target node Reaches after RemoveClosure: "<<Reaches[b].length()<<"\n\n\n";
-	//---------------------------------------------------------------------------------------------------
-	
-	
-
 	
 	
 }
@@ -235,7 +157,7 @@ void RemoveClosure(graph& G, node v, node w, node_array<list<node>>& Reaches, no
 }
 
 
-void InsertEdge(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
+void InsertEdge(graph& G, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
 	
 	assert(check_if_edge_exists(G, a, b) == false); // assure that edge does not already exist
 	
@@ -249,8 +171,6 @@ void InsertEdge(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& supp
 		
 		MakeClosure(G, a, b, Reaches, Index);
 		worklist.push(std::make_pair(a,b));
-		//new_tc_edge_insertion(G, supportG, support_list, a, b, Index); // find path operation for new tc edge
-		
 		
 	}
 	
@@ -264,11 +184,9 @@ void InsertEdge(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& supp
 			
 			MakeClosure(G, x, b, Reaches, Index);
 			worklist.push(std::make_pair(x,b));
-			//new_tc_edge_insertion(G, supportG, support_list, x, b, Index); // find path operation for new tc edge
 			
 		}
 		Index[x][b].refcount += 1;		// in any case, its refcount is incremented due to the new triple <x,a,b> in ref(x,b)
-		//refcount_incremented_insertion(G, supportG, support_list, x, a, b, Index); // find path operation
 		
 	}
 	
@@ -286,10 +204,8 @@ void InsertEdge(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& supp
 
 				MakeClosure(G, x, z, Reaches, Index);
 				worklist.push(std::make_pair(x,z));
-				//new_tc_edge_insertion(G, supportG, support_list, x, z, Index); // find path operation for new tc edge
 			}
-			Index[x][z].refcount += 1;				// in any case, its refcount is incremented due to the new triple <x,y,z> in ref(x,z)
-			//refcount_incremented_insertion(G, supportG, support_list, x, y, z, Index); // find path operation			
+			Index[x][z].refcount += 1;				// in any case, its refcount is incremented due to the new triple <x,y,z> in ref(x,z)			
 		}
 	}
 	
@@ -403,6 +319,92 @@ void refcount_incremented_insertion(graph& G, GRAPH<int, edge>& supportG, list<s
 	node x_z_node = find_node_by_info(supportG, x_z_closure_index);	// get node <x,z> from supportG
 	supportG.new_edge(new_join_node, x_z_node);
 	//----------------------------------------------------------------------------------------------------
+}
+
+// custom path for findpath testing
+std::pair<node,node> custom_path_for_findpath(int length, graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
+	
+	std::cout<<"\n\nActual path:\n\n";
+	node first = G.choose_node();
+	node prev = first;
+	
+	G.print_node(first);
+	std::cout<<"\n";
+	for(int i=0 ;i < length; i++) {
+		
+		node next = G.choose_node();
+		while(!edge_can_be_inserted(G, prev, next)) 
+			next = G.choose_node();
+			
+		InsertEdge(G, supportG, support_list, prev, next, Adjacent, Reaches, Index);
+		G.print_node(next);
+		std::cout<<"\n";
+		prev = next;
+	}
+	std::cout<<"\n\n";
+	return std::make_pair(first, prev);
+}
+
+// insert edge with findpath operation
+void InsertEdge(graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
+	
+	assert(check_if_edge_exists(G, a, b) == false); // assure that edge does not already exist
+	
+	
+	list<std::pair<node, node>> worklist; // worklist will contain the new transitive closure edges. List of pair nodes
+	node x,y,z;
+	
+	
+	
+	if(Index[a][b].refcount == 0) { 	// then <a,b> is a new transitive closure edge 
+		
+		MakeClosure(G, a, b, Reaches, Index);
+		worklist.push(std::make_pair(a,b));
+		new_tc_edge_insertion(G, supportG, support_list, a, b, Index); // find path operation for new tc edge
+		
+		
+	}
+	
+	MakeEdge(G, a, b, Adjacent, Index);	// in any case, <a,b> is a new graph edge 
+	Index[a][b].refcount += 1;			// so increment its refcount by 1
+	
+	
+	forall(x, Reaches[a]) {				// examine each existing tc edge <x,a> 
+	
+		if(Index[x][b].refcount == 0) {
+			
+			MakeClosure(G, x, b, Reaches, Index);
+			worklist.push(std::make_pair(x,b));
+			new_tc_edge_insertion(G, supportG, support_list, x, b, Index); // find path operation for new tc edge
+			
+		}
+		Index[x][b].refcount += 1;		// in any case, its refcount is incremented due to the new triple <x,a,b> in ref(x,b)
+		refcount_incremented_insertion(G, supportG, support_list, x, a, b, Index); // find path operation
+		
+	}
+	
+	
+	while(!worklist.empty()) {			// examine each new tc edge <x,y> 
+		
+
+		std::pair<node, node> new_tc_edge = worklist.pop();
+		x = new_tc_edge.first;
+		y = new_tc_edge.second;
+		
+		forall(z, Adjacent[y]) {					// examine each graph edge <y,z> 
+			
+			if(Index[x][z].refcount == 0) {			// then <x,z> is a new transitive closure edge	
+
+				MakeClosure(G, x, z, Reaches, Index);
+				worklist.push(std::make_pair(x,z));
+				new_tc_edge_insertion(G, supportG, support_list, x, z, Index); // find path operation for new tc edge
+			}
+			Index[x][z].refcount += 1;				// in any case, its refcount is incremented due to the new triple <x,y,z> in ref(x,z)
+			refcount_incremented_insertion(G, supportG, support_list, x, y, z, Index); // find path operation			
+		}
+	}
+	
+	
 }
 
 
@@ -532,6 +534,7 @@ void print_edges(graph& G) {
 	
 }
 
+
 node find_predecessor(node x, node z, list<support_struct>& support_list) {
 	
 	support_struct j;
@@ -567,7 +570,7 @@ node find_node_by_info(GRAPH<int, edge>& supportG, int info) {
 }
 
 
-std::pair<node,node> custom_path(int length, graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node a, node b, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
+std::pair<node,node> custom_path(int length, graph& G, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
 	
 	//std::cout<<"\n\nActual path:\n\n";
 	node first = G.choose_node();
@@ -575,17 +578,91 @@ std::pair<node,node> custom_path(int length, graph& G, GRAPH<int, edge>& support
 	
 	// G.print_node(first);
 	// std::cout<<"\n";
-	for(int i=0 ;i < 11; i++) {
+	for(int i=0 ;i < length; i++) {
 		
 		node next = G.choose_node();
 		while(!edge_can_be_inserted(G, prev, next)) 
 			next = G.choose_node();
 			
-		InsertEdge(G, supportG, support_list, prev, next, Adjacent, Reaches, Index);
+		InsertEdge(G, prev, next, Adjacent, Reaches, Index);
 		// G.print_node(next);
 		// std::cout<<"\n";
 		prev = next;
 	}
 	std::cout<<"\n\n";
 	return std::make_pair(first, prev);
+}
+
+// test functions
+
+void test_insert_delete(graph& G, int num_of_edges_inserted, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
+	
+	timer insert_time, delete_time;
+	std::cout<<"\n-----------------INSERTING EDGES-----------------\n";
+	//-----------------------------------------------INSERTING EDGES-----------------------------------------------
+	insert_time.start();
+	std::pair<node,node> my_pair = custom_path(num_of_edges_inserted, G, Adjacent, Reaches, Index);
+	// while(num_of_edges_inserted > 0) {
+		
+		
+		// node src = G.choose_node();
+		// node trg = G.choose_node();
+		
+		// while(!edge_can_be_inserted(G, src, trg)) {
+			// src = G.choose_node();
+			// trg = G.choose_node();
+		// }
+		
+		// InsertEdge(G, supportG, support_list, src, trg, Adjacent, Reaches, Index);
+		// num_of_edges_inserted--;
+		
+		// std::cout<<"\n\nEdges of G:\n\n";
+		// print_edges(G);
+		// std::cout<<"\n\nEdges of G transitive closure:\n\n";
+		// tc_edges(G, Reaches);
+		
+		
+	// }
+	insert_time.stop();
+	std::cout<<"Insert time: "<<insert_time.elapsed_time()<<"\n";
+	std::cout<<"Number of edges after insertions: "<<G.number_of_edges()<<"\n";
+	
+	node_array<int> ord(G);
+	assert(TOPSORT(G, ord) == true); // assure graph is acyclic
+	
+	
+	//-------------------------------------------------------------------------------------------------------------
+	std::cout<<"\n-----------------DELETING EDGES-----------------\n";
+	//-----------------------------------------------DELETING EDGES------------------------------------------------
+	
+	// delete all edges previously inserted
+	list<edge> edges_to_delete = G.all_edges();
+	edges_to_delete.permute(); // randomness
+	delete_time.start();
+	while(!edges_to_delete.empty()) {
+		edge to_delete = edges_to_delete.pop();
+		DeleteEdge(G, source(to_delete), target(to_delete), Adjacent, Reaches, Index);
+		
+		// std::cout<<"\n\nEdges of G:\n\n";
+		// print_edges(G);
+		// std::cout<<"\n\nEdges of G transitive closure:\n\n";
+		// tc_edges(G, Reaches);
+	}
+	delete_time.stop();
+	std::cout<<"Delete time: "<<delete_time.elapsed_time()<<"\n";
+	//std::cout<<"Number of edges after deletions: "<<G.number_of_edges()<<"\n";
+}
+
+
+void test_findpath(int length, graph& G, GRAPH<int, edge>& supportG, list<support_struct>& support_list, node_array<list<node>>& Adjacent, node_array<list<node>>& Reaches, node_matrix<my_struct>& Index) {
+	//---------------------------------------test findpath-------------------------------------------------------------
+	timer findpath_time;
+	std::pair<node,node> my_pair = custom_path_for_findpath(length, G, supportG, support_list, Adjacent, Reaches, Index);
+	std::cout<<"\n\nPath returned from findpath:\n\n";
+	findpath_time.start();
+	findpath(G, my_pair.first, my_pair.second, support_list, Index);
+	findpath_time.stop();
+	std::cout<<"\nFindpath time: "<<findpath_time.elapsed_time()<<"\n";
+	std::cout<<"\n\n";
+	//-----------------------------------------------------------------------------------------------------------------
 }
